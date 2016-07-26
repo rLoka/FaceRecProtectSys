@@ -33,17 +33,21 @@
     </child>
   </object>
   <object class="GtkWindow" id="infoWindow">
+    <property name="width_request">500</property>
+    <property name="height_request">300</property>
     <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="resize_mode">immediate</property>
         <property name="orientation">vertical</property>
-        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="infoLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_bottom">14</property>
+            <property name="ypad">14</property>
             <property name="label" translatable="yes">label</property>
             <attributes>
               <attribute name="scale" value="2"/>
@@ -227,6 +231,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnOne_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -239,6 +244,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnTwo_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -252,6 +258,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="yalign">0.51999998092651367</property>
+                <signal name="clicked" handler="on_btnThree_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -264,6 +271,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnEight_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -276,6 +284,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnFive_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -288,6 +297,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnFour_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -300,6 +310,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnSeven_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -312,6 +323,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnSix_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -324,6 +336,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnZero_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -336,6 +349,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnNine_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -350,6 +364,7 @@
                 <property name="receives_default">True</property>
                 <property name="relief">half</property>
                 <property name="xalign">0.4699999988079071</property>
+                <signal name="clicked" handler="on_btnConfirm_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -363,6 +378,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="xalign">0.4699999988079071</property>
+                <signal name="clicked" handler="on_btnReset_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>
