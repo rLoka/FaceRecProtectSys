@@ -7,15 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D0BBE5F1D535B2B003703B1 /* ysocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0BBE5C1D535B2B003703B1 /* ysocket.swift */; };
+		4D0BBE601D535B2B003703B1 /* ytcpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = 4D0BBE5D1D535B2B003703B1 /* ytcpsocket.c */; };
+		4D0BBE611D535B2B003703B1 /* ytcpsocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0BBE5E1D535B2B003703B1 /* ytcpsocket.swift */; };
+		4D29F5551D53B52C0059F986 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D29F5541D53B52C0059F986 /* SettingsViewController.swift */; };
+		4D3957811D52956C00A4357F /* check-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D3957801D52956C00A4357F /* check-icon.png */; };
+		4D3957831D52957200A4357F /* refresh-4-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D3957821D52957200A4357F /* refresh-4-icon.png */; };
+		4D3957851D52957B00A4357F /* multiply-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D3957841D52957B00A4357F /* multiply-icon.png */; };
 		4D78A53A1D52377B0050912B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D78A5391D52377B0050912B /* AppDelegate.swift */; };
 		4D78A53C1D52377B0050912B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D78A53B1D52377B0050912B /* ViewController.swift */; };
 		4D78A53F1D52377B0050912B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D78A53D1D52377B0050912B /* Main.storyboard */; };
 		4D78A5421D52377B0050912B /* MobilniToken.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4D78A5401D52377B0050912B /* MobilniToken.xcdatamodeld */; };
 		4D78A5441D52377B0050912B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D78A5431D52377B0050912B /* Assets.xcassets */; };
 		4D78A5471D52377B0050912B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D78A5451D52377B0050912B /* LaunchScreen.storyboard */; };
+		4D89DA621D5393B5009A0EDE /* settings-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D89DA611D5393B5009A0EDE /* settings-icon.png */; };
+		4D9CAA251D5252A300F7F72F /* lock-unlock-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D9CAA241D5252A300F7F72F /* lock-unlock-icon.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4D0BBE5C1D535B2B003703B1 /* ysocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ysocket.swift; sourceTree = "<group>"; };
+		4D0BBE5D1D535B2B003703B1 /* ytcpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ytcpsocket.c; sourceTree = "<group>"; };
+		4D0BBE5E1D535B2B003703B1 /* ytcpsocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ytcpsocket.swift; sourceTree = "<group>"; };
+		4D29F5541D53B52C0059F986 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		4D3957801D52956C00A4357F /* check-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "check-icon.png"; sourceTree = "<group>"; };
+		4D3957821D52957200A4357F /* refresh-4-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "refresh-4-icon.png"; sourceTree = "<group>"; };
+		4D3957841D52957B00A4357F /* multiply-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "multiply-icon.png"; sourceTree = "<group>"; };
 		4D78A5361D52377B0050912B /* MobilniToken.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MobilniToken.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D78A5391D52377B0050912B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D78A53B1D52377B0050912B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -24,6 +40,8 @@
 		4D78A5431D52377B0050912B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4D78A5461D52377B0050912B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4D78A5481D52377B0050912B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4D89DA611D5393B5009A0EDE /* settings-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings-icon.png"; sourceTree = "<group>"; };
+		4D9CAA241D5252A300F7F72F /* lock-unlock-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock-unlock-icon.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +74,14 @@
 		4D78A5381D52377B0050912B /* MobilniToken */ = {
 			isa = PBXGroup;
 			children = (
+				4D0BBE5C1D535B2B003703B1 /* ysocket.swift */,
+				4D0BBE5D1D535B2B003703B1 /* ytcpsocket.c */,
+				4D0BBE5E1D535B2B003703B1 /* ytcpsocket.swift */,
+				4D89DA611D5393B5009A0EDE /* settings-icon.png */,
+				4D9CAA241D5252A300F7F72F /* lock-unlock-icon.png */,
+				4D3957821D52957200A4357F /* refresh-4-icon.png */,
+				4D3957801D52956C00A4357F /* check-icon.png */,
+				4D3957841D52957B00A4357F /* multiply-icon.png */,
 				4D78A5391D52377B0050912B /* AppDelegate.swift */,
 				4D78A53B1D52377B0050912B /* ViewController.swift */,
 				4D78A53D1D52377B0050912B /* Main.storyboard */,
@@ -63,6 +89,7 @@
 				4D78A5451D52377B0050912B /* LaunchScreen.storyboard */,
 				4D78A5481D52377B0050912B /* Info.plist */,
 				4D78A5401D52377B0050912B /* MobilniToken.xcdatamodeld */,
+				4D29F5541D53B52C0059F986 /* SettingsViewController.swift */,
 			);
 			path = MobilniToken;
 			sourceTree = "<group>";
@@ -101,6 +128,7 @@
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = QX8LPX4286;
 						DevelopmentTeamName = "Karlo Grlic (Personal Team)";
+						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -129,8 +157,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D78A5471D52377B0050912B /* LaunchScreen.storyboard in Resources */,
+				4D3957831D52957200A4357F /* refresh-4-icon.png in Resources */,
 				4D78A5441D52377B0050912B /* Assets.xcassets in Resources */,
+				4D89DA621D5393B5009A0EDE /* settings-icon.png in Resources */,
 				4D78A53F1D52377B0050912B /* Main.storyboard in Resources */,
+				4D3957851D52957B00A4357F /* multiply-icon.png in Resources */,
+				4D3957811D52956C00A4357F /* check-icon.png in Resources */,
+				4D9CAA251D5252A300F7F72F /* lock-unlock-icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,9 +174,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D0BBE611D535B2B003703B1 /* ytcpsocket.swift in Sources */,
 				4D78A5421D52377B0050912B /* MobilniToken.xcdatamodeld in Sources */,
+				4D29F5551D53B52C0059F986 /* SettingsViewController.swift in Sources */,
 				4D78A53C1D52377B0050912B /* ViewController.swift in Sources */,
+				4D0BBE5F1D535B2B003703B1 /* ysocket.swift in Sources */,
 				4D78A53A1D52377B0050912B /* AppDelegate.swift in Sources */,
+				4D0BBE601D535B2B003703B1 /* ytcpsocket.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,11 +299,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = MobilniToken/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = rLoka.MobilniToken;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -275,6 +314,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = MobilniToken/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -303,6 +343,7 @@
 				4D78A54D1D52377B0050912B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
