@@ -16,11 +16,12 @@ class ViewController: UIViewController {
     //Identifikacijski podaci uređaja/tokena
     let gDeviceKey = UIDevice.current().identifierForVendor!.uuidString
     var gUserKey: String?
-     
+    
     //SuperGlobalna varijabla za spremanje postavki
     let defaults = UserDefaults.standard
     
     //Da li su sve postavke učitane?
+    var isConnected = false
     var isEverythingSet = false
     
     //Socket
@@ -31,10 +32,14 @@ class ViewController: UIViewController {
         
         refreshAlert.addAction(UIAlertAction(title: "Da", style: .default, handler: { (action: UIAlertAction!) in
             self.client.send(str: "ok:" + token)
+            self.imageContainer.image = UIImage(named: "check-icon")
+            self.lbStatusLabel.text = "Transakcija odobrena"
         }))
         
         refreshAlert.addAction(UIAlertAction(title: "Ne", style: .cancel, handler: { (action: UIAlertAction!) in
             self.client.send(str: "no:" + token)
+            self.imageContainer.image = UIImage(named: "multiply-icon")
+            self.lbStatusLabel.text = "Transakcija odbijena"
         }))
         
         present(refreshAlert, animated: true, completion: nil)
@@ -48,11 +53,14 @@ class ViewController: UIViewController {
             imageContainer.image = UIImage(named: "multiply-icon")
             lbStatusLabel.text = "Greška pri spajanju"
         }
+        else{
+            isConnected = true
+            lbStatusLabel.text = "Veza uspostavljena"
+            imageContainer.image = UIImage(named: "check-icon")
+        }
     }
     
-    //Slanje inicijalnog paketa i primanje poeukw
-    func sendInitialPackage(){
-        self.client.send(str:"key:" + gUserKey! + ";" + gDeviceKey)
+    func getData(){
         let data = client.read(expectlen: 1024*10)
         if let d = data {
             if let str = NSString(bytes:d, length: d.count, encoding: String.Encoding.utf8.rawValue) as? String{
@@ -62,18 +70,35 @@ class ViewController: UIViewController {
                     switch keyAndMessage[0] {
                     case "token":
                         approveToken(token: keyAndMessage[1])
+                        lbStatusLabel.text = keyAndMessage[1] as String
+                        imageContainer.image = UIImage(named: "check-icon")
+                        
                     case "idle":
-                        print("idle")
+                        imageContainer.image = UIImage(named: "refresh-4-icon")
+                        lbStatusLabel.text = "Nema transakcija"
+                        self.client.close()
+                        isConnected = false
+                        
                     case "error":
-                        print("error")
+                        imageContainer.image = UIImage(named: "multiply-icon")
+                        lbStatusLabel.text = "Nedefinirana greška"
+                        self.client.close()
+                        isConnected = false
+                        
                     default:
                         print("default")
+                        client.close()
+                        isConnected = false
                     }
                 }
-                lbStatusLabel.text = keyAndMessage[1] as String
-                imageContainer.image = UIImage(named: "refresh-4-icon")
             }
         }
+    }
+    
+    //Slanje inicijalnog paketa i primanje poeukw
+    func sendInitialPackage(){
+        self.client.send(str:"usr:" + gUserKey! + ";" + gDeviceKey)
+        getData()
     }
     
     @IBOutlet weak var lbStatusLabel: UITextField!
@@ -83,6 +108,7 @@ class ViewController: UIViewController {
     
     @IBAction func btnRefreshClick(_ sender: AnyObject) {
         if isEverythingSet {
+            connectToServer()
             refreshIndicator.startAnimating()
             sendInitialPackage()
             refreshIndicator.stopAnimating()
