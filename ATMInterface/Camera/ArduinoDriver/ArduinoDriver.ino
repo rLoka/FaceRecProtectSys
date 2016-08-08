@@ -25,22 +25,22 @@ byte input;
 //Metode za pomicanje motora
 void moveRight(int i)
 {
-  servoLR.write(i + 2);
+  servoLR.write(i + 1);
 }
 
 void moveLeft(int i)
 {
-  servoLR.write(i - 3);
+  servoLR.write(i - 1);
 }
 
 void moveUp(int i)
 {
-  servoUD.write(i + 2);
+  servoUD.write(i + 1);
 }
 
 void moveDown(int i)
 {
-  servoUD.write(i - 2);   
+  servoUD.write(i - 1);   
 }
 
 

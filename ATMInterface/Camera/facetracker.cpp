@@ -1,12 +1,15 @@
 /*
-Dio izvornog koda preuzet sa https://github.com/opencv/opencv/blob/master/samples/cpp/dbt_face_detection.cpp
+Dio izvornog koda preuzet sa:
+https://github.com/opencv/opencv/blob/master/samples/cpp/dbt_face_detection.cpp
+http://stackoverflow.com/questions/143174/how-do-i-get-the-directory-that-a-program-is-running-from
+http://stackoverflow.com/questions/7352099/stdstring-to-char
 */
 
 /*
-Verzija: 1.0
+Verzija: 1.1
 Opis: Program za detekciju i komunikaciju sa Arduino mikrokontrolerom
 Autor: Karlo Grlić
-Datum: 07.2015.
+Datum: 08.2015.
 */
 
 #include <opencv2/imgproc.hpp>
@@ -16,6 +19,10 @@ Datum: 07.2015.
 #include <opencv2/features2d.hpp>
 #include <opencv2/objdetect.hpp>
 #include <fstream>
+#include <iostream>
+#include <string>
+#include <limits.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace cv;
@@ -58,12 +65,16 @@ private:
     Ptr<CascadeClassifier> Detector;
 };
 
-
 int main(int, char **) {
+
+    cout << "Inicijalizacija uređaja." << endl;
 
     //Inicijalizacija i otvaranje veze za slanje podataka Arduino mikrokontroleru putem serijskog porta
     ofstream arduinoDevice;
     arduinoDevice.open("/dev/ttyUSB0", ios::out | ios::app | ios::binary);
+
+    //Brisanje postojećih datoteka u Resource direktoriju
+    system("exec rm -r Resources/*");
 
     string WindowName = "Praćenje lica";
     namedWindow(WindowName);
@@ -90,7 +101,18 @@ int main(int, char **) {
     Mat GrayFrame;
     vector<Rect> Faces;
 
+    //Varijabla u kojoj je spremljen broj uzetih fotografija lica
+    int faceShotsCount = 0;
+    /*
+    char path [100] = "";
+    const char* systemPath = (char*)system("echo $PWD");
+    strcpy(path, systemPath);
+     */
+
+    cout << "Traženje uzorka." << endl;
+
     while (true) {
+
         VideoStream >> ReferenceFrame;
         cvtColor(ReferenceFrame, GrayFrame, COLOR_RGB2GRAY);
         Detector.process(GrayFrame);
@@ -98,6 +120,8 @@ int main(int, char **) {
 
         int biggestFaceIndex = -1;
         int biggestFaceWidth = 0;
+        bool faceYalligned = false;
+        bool faceXalligned = false;
         
         //Za praćenje odabiremo samo najveće lice u kadru - pretposatvljamo da je to korisnik
         for (int i = 0; i < Faces.size(); i++) {
@@ -116,27 +140,51 @@ int main(int, char **) {
             int FaceCenterY = Faces[biggestFaceIndex].y + Faces[biggestFaceIndex].height / 2;
 
             if (FaceCenterX < camCenterWidthAreaMin) {
+                faceXalligned = false;
                 arduinoDevice << (char) 1 << endl;
             }
             else if (FaceCenterX > camCenterWidthAreaMax) {
+                faceXalligned = false;
                 arduinoDevice << (char) 2 << endl;
+            }
+            else {
+                faceXalligned = true;
             }
 
             if (FaceCenterY > camCenterHeightAreaMax) {
                 arduinoDevice << (char) 4 << endl;
+                faceYalligned = false;
             }
             else if (FaceCenterY < camCenterHeightAreaMin) {
                 arduinoDevice << (char) 3 << endl;
+                faceYalligned = false;
+            }
+            else {
+                faceYalligned = true;
+            }
+
+            if (faceXalligned && faceYalligned)
+            {
+                if (faceShotsCount < 5) {
+                    Faces[biggestFaceIndex].width += 30;
+                    Faces[biggestFaceIndex].height += 30;
+                    Faces[biggestFaceIndex].x -= 30;
+                    Faces[biggestFaceIndex].y -= 30;
+
+                    cv::Mat croppedFaceImage;
+                    croppedFaceImage = GrayFrame(Faces[biggestFaceIndex]).clone();
+                    imwrite("Resources/" + to_string(faceShotsCount) + ".jpg", croppedFaceImage);
+                    faceShotsCount++;
+                    cout << "Uzorak lica uzet." << endl;
+                }
             }
         }
 
         imshow(WindowName, ReferenceFrame);
-
         if (waitKey(30) >= 0) break;
     }
 
     arduinoDevice.close();
-
     Detector.stop();
 
     return 0;

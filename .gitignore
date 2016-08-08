@@ -2,4 +2,7 @@ Arduino/CMakeFiles/
 Arduino/.idea
 Arduino/FaceTracker
 ATMInterface/.idea
+ATMInterface/Camera/.idea
+ATMInterface/Camera/CMakeFiles
 AuthenticationServer/.idea
+*.jpg
