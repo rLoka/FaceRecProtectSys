@@ -177,6 +177,11 @@ int main(int, char **) {
                     faceShotsCount++;
                     cout << "Uzorak lica uzet." << endl;
                 }
+                else {
+                    arduinoDevice.close();
+                    Detector.stop();
+                    return 0;
+                }
             }
         }
 

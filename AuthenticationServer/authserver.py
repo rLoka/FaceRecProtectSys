@@ -1,7 +1,12 @@
-# dio koda preuzet sa http://www.binarytides.com/python-socket-server-code-example/
+# dio koda preuzet sa:
+# http://www.binarytides.com/python-socket-server-code-example/
+# http://hanzratech.in/2015/02/03/face-recognition-using-opencv.html
 
 import socket
 from thread import *
+import cv2, os
+import numpy as np
+from PIL import Image
 
 HOST = ""
 PORT = 8888
@@ -18,7 +23,7 @@ class Transaction(object):
     transactionCode = None
     panNumber = None
     mobileToken = None
-    aproved = None
+    approved = None
 
 
 class User(object):
@@ -44,6 +49,23 @@ class Interface:
         self.ipAddress = ipaddres
         self.port = port
 
+class FaceRecognitionTrainer:
+    a = None
+
+class FaceRecognizer:
+    cascadePath = "haarcascade_frontalface_default.xml"
+    recognizer = cv2.face.createLBPHFaceRecognizer()
+
+    def __init__(self, panNumber):
+        self.recognizer.load("Users/" + str(panNumber) + "/" + str(panNumber) + ".yml")
+
+    def recognize(self, faceImage):
+        faceCascade = cv2.CascadeClassifier(self.cascadePath)
+        faces = faceCascade.detectMultiScale(faceImage)
+        if len(faces) == 1:
+            id, distance = self.recognizer.predict(faceImage)
+            return distance
+
 
 # Metoda za prihvacanje klijenta
 def connectionThread(connection, addr):
@@ -60,16 +82,37 @@ def connectionThread(connection, addr):
         if key == "ifc":
             interface = Interface(message, addr[0], addr[1])
             interfaceList.append(interface)
+            connection.send(unicode("ok:ok\n"))
 
         elif key == "usr":
             user = User(message, addr[0], addr[1])
             userList.append(user)
             connection.send(unicode("idle:idle\n"))
 
+        elif key == "acc":
+            transaction = Transaction()
+            transaction.panNumber = message
+            transaction.interface = next((x for x in interfaceList if x.ipAddress == addr[0] and x.port == addr[1]), None)
+            transactionList.append(transaction)
+
+            if not os.path.exists("Auth/" + str(message)):
+                os.makedirs("Auth/" + str(message))
+            connection.send(unicode("ok:ok\n"))
+
+        elif key == "pin":
+            transaction = next((x for x in transactionList if x.interface.ipAddress == addr[0] and x.interface.port == addr[1]), None)
+            faceRecognizer = FaceRecognizer(transaction.panNumber)
+            for faceImageFile in os.listdir("Auth/" + str(transaction.panNumber)):
+                faceImage = cv2.imread("Auth/" + str(transaction.panNumber) + "/" + faceImageFile,0)
+                print faceRecognizer.recognize(faceImage)
+            connection.send(unicode("ok:ok\n"))
+
+
         elif key == "ftp":
             connection.send(unicode("ok:ok\n"))
             print "Primam uzorke lica ..."
-            imageFile = open(str(message) + '.jpg', 'w')
+            transaction = next((x for x in transactionList if x.interface.ipAddress == addr[0] and x.interface.port == addr[1]), None)
+            imageFile = open("Auth/" + str(transaction.panNumber) + "/" + str(message) + '.jpg', 'w')
             while True:
                 imageBytes = connection.recv(4096)
 
