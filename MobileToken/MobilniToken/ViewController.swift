@@ -68,18 +68,18 @@ class ViewController: UIViewController {
                 let keyAndMessage = str.characters.split{$0 == ":"}.map(String.init)
                 if (keyAndMessage[0] as? String) != nil {
                     switch keyAndMessage[0] {
-                    case "token":
+                    case "tkn":
                         approveToken(token: keyAndMessage[1])
                         lbStatusLabel.text = keyAndMessage[1] as String
                         imageContainer.image = UIImage(named: "check-icon")
                         
-                    case "idle":
+                    case "idl":
                         imageContainer.image = UIImage(named: "refresh-4-icon")
                         lbStatusLabel.text = "Nema transakcija"
                         self.client.close()
                         isConnected = false
                         
-                    case "error":
+                    case "err":
                         imageContainer.image = UIImage(named: "multiply-icon")
                         lbStatusLabel.text = "Nedefinirana greška"
                         self.client.close()
