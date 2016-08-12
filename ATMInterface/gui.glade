@@ -53,9 +53,9 @@
     </data>
   </object>
   <object class="GtkWindow" id="infoWindow">
-    <property name="width_request">500</property>
-    <property name="height_request">300</property>
+    <property name="width_request">400</property>
     <property name="can_focus">False</property>
+    <signal name="activate-default" handler="on_infoWindow_activate_default" swapped="no"/>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -63,7 +63,7 @@
         <property name="resize_mode">immediate</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel" id="infoLabel">
+          <object class="GtkLabel" id="infoTitle">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_bottom">14</property>
@@ -80,7 +80,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="detailInfoLabel">
+          <object class="GtkLabel" id="infoText">
+            <property name="height_request">60</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">label</property>
@@ -89,6 +90,63 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="infoWindow2">
+    <property name="width_request">400</property>
+    <property name="can_focus">False</property>
+    <signal name="activate-default" handler="on_infoWindow2_activate_default" swapped="no"/>
+    <child>
+      <object class="GtkBox" id="box2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="resize_mode">immediate</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="infoTitle2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_bottom">14</property>
+            <property name="ypad">14</property>
+            <property name="label" translatable="yes">label</property>
+            <attributes>
+              <attribute name="scale" value="2"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="infoText2">
+            <property name="height_request">60</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">label</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="hideInfoWindow2">
+            <property name="label" translatable="yes">U redu</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="on_hideInfoWindow2_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
