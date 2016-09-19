@@ -5,4 +5,5 @@ ATMInterface/.idea
 ATMInterface/Camera/.idea
 ATMInterface/Camera/CMakeFiles
 AuthenticationServer/.idea
+Analysis/CroppedYale
 *.jpg

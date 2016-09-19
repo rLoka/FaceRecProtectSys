@@ -69,6 +69,15 @@ class FaceRecognitionTrainer:
         self.imagePath = "Users/" + str(panNumber) + "/Samples"
         self.newImageFile = "Auth/" + str(panNumber) + "/" + newImageFile
 
+    def trainNew(self):
+        for faceImageFile in os.listdir("Users/" + str(self.panNumber) + "/Samples/"):
+            faceImage = cv2.imread("Users/" + str(self.panNumber) + "/Samples/" + faceImageFile, 0)
+            self.imageList.append(faceImage)
+            self.labelList.append(hash(self.panNumber))
+        self.recognizer.train(self.imageList, np.array(self.labelList))
+        self.recognizer.save("Users/" + str(self.panNumber) + "/" + str(self.panNumber) + ".yml")
+        print "Treniranje podataka dovrseno ..."
+
     def train(self):
         print "Treniranje podataka  ..."
         '''
@@ -152,7 +161,6 @@ def connectionThread(connection, addr):
             time.sleep(1)
             cleanData(transaction)
 
-
         elif key == "acc":
             #uklanjanje starih podataka
             transaction = next((x for x in transactionList if x.panNumber == message), None)
@@ -185,7 +193,7 @@ def connectionThread(connection, addr):
 
             #Ako je prepoznavanje uspjesno onda uzmi najpovoljniju fotografiju i pridodaj ostalim uzorcima
             leastDistance = min(transaction.faceDict.itervalues())
-            if leastDistance <= 30 and leastDistance != None:
+            if leastDistance <= 25 and leastDistance != None:
                 print "Uzorak prihvacen, udaljenost =", leastDistance
                 connection.send(unicode("ath:pin;ok:fce;ok:tkn;none"))
                 leastDistanceKeys = transaction.faceDict.keys()[transaction.faceDict.values().index(leastDistance)]
@@ -197,7 +205,6 @@ def connectionThread(connection, addr):
                 print "Poslan zahtijev za token .."
                 transaction.mobileToken = hashlib.sha1((transaction.panNumber + transaction.interface.ipAddress + str(int(time.time()))).encode("UTF-8")).hexdigest()[:8]
                 connection.send(unicode("ath:pin;ok:fce;fls:tkn;" + transaction.mobileToken))
-
 
         elif key == "ftp":
             connection.send(unicode("ok:ok"))
