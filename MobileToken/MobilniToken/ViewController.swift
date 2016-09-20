@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     let alertController = UIAlertController(title: "Postavke", message: "Molimo, popunite sve vrijednosti u Postavkama prije korištenja!", preferredStyle: UIAlertControllerStyle.alert)
     
     //Identifikacijski podaci uređaja/tokena
-    let gDeviceKey = UIDevice.current().identifierForVendor!.uuidString
+    let gDeviceKey = UIDevice.current.identifierForVendor!.uuidString
     var gUserKey: String?
     
     //SuperGlobalna varijabla za spremanje postavki
