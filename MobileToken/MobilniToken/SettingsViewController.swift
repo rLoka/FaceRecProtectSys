@@ -17,18 +17,18 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var tbId: UITextField!
     
     @IBAction func btnSaveClick(_ sender: AnyObject) {
-        if let text = tbIpAddress.text where !text.isEmpty
+        if let text = tbIpAddress.text , !text.isEmpty
         {
             defaults.set(tbIpAddress.text, forKey: "serverIp")
         }
         
-        if let text = tbPort.text where !text.isEmpty
+        if let text = tbPort.text , !text.isEmpty
         {
             let serverPort: Int? = Int(tbPort.text!)
             defaults.set(serverPort!, forKey: "serverPort")
         }
         
-        if let text = tbId.text where !text.isEmpty
+        if let text = tbId.text , !text.isEmpty
         {
             defaults.set(tbId.text, forKey: "userKey")
         }
