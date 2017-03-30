@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     
     //Alerts
     let alertController = UIAlertController(title: "Postavke", message: "Molimo, popunite sve vrijednosti u Postavkama prije korištenja!", preferredStyle: UIAlertControllerStyle.alert)
+    @IBOutlet weak var statustxtField: UITextField!
     
     //Identifikacijski podaci uređaja/tokena
     let gDeviceKey = UIDevice.current.identifierForVendor!.uuidString
