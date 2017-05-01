@@ -1,0 +1,3 @@
+/home/skywalker/Desktop/Faks/Rektorova/Rad/Source Code/FaceRecProtectSys/ATMInterface/Camera/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/skywalker/Desktop/Faks/Rektorova/Rad/Source Code/FaceRecProtectSys/ATMInterface/Camera/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/skywalker/Desktop/Faks/Rektorova/Rad/Source Code/FaceRecProtectSys/ATMInterface/Camera/cmake-build-debug/CMakeFiles/FaceTracker.dir

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import cv2, os
 import numpy as np
 from PIL import Image
@@ -20,7 +21,7 @@ def trainNew():
 		for faceImageFile in os.listdir("CroppedYale/" + person + "/"):
 			if faceImageFile.endswith(".pgm"):
 				if j % 2 == 0:	
-					print "File:", faceImageFile		
+					print ("File: " + faceImageFile)		
 					faceImage = cv2.imread("CroppedYale/" + person + "/" + faceImageFile, 0)
 				    	imageList.append(faceImage)
 				    	labelList.append(hash(panNumber))
@@ -37,6 +38,8 @@ def recognizeControl():
 	globalImages = 0
 	globalSumm = 0
 	for person in os.listdir("CroppedYale"):
+		f = open(person + "_con", "w")
+		print("u s" , file=f)
 		j = 0
 		recognizer = cv2.face.createLBPHFaceRecognizer()
 		recognizer.load("CroppedYale/" + person + "/recognizer.yml")
@@ -54,14 +57,15 @@ def recognizeControl():
 					summ += distance
 					valueList.append(distance)
 					globalValueList.append(distance)					
-				    	print faceImageFile, distance
+				    	print (faceImageFile + " " + str(distance))
+					print(str(images) + " " +  str(distance) , file=f)
 				j += 1
 			
 		recognizer = None
 		
-		print "Prosjeca udaljenost:", float(summ/images)
-		print "Maksimum: ", max(valueList)
-		print "Minimum: ", min(valueList)
+		print ("Prosjeca udaljenost: " + str(float(summ/images)))
+		print ("Maksimum: " + str(max(valueList)))
+		print ("Minimum: " + str(min(valueList)))
 
 		globalMeanValueList.append(float(summ/images))
 
@@ -74,16 +78,16 @@ def recognizeControl():
 			else:
 				vecih += 1
 
-		print "Broj uzoraka manjih od prosjeka pozitivnih (38.2916230658):", manjih
-		print "Broj uzoraka vecih+ od prosjeka pozitivnih (38.2916230658):", vecih
+		print ("Broj uzoraka manjih od prosjeka pozitivnih (38.2916230658): " +  str(manjih))
+		print ("Broj uzoraka vecih+ od prosjeka pozitivnih (38.2916230658): " + str(vecih))
 
 		setStat.append([person,float(summ/images),max(valueList),min(valueList),manjih,vecih])
 
 		del valueList[:]
 
-	print "Globalna prosjeca udaljenost:", float(globalSumm/globalImages)
-	print "Globalni maksimum: ", max(globalValueList)
-	print "Globalni minimum: ", min(globalValueList)
+	print ("Globalna prosjeca udaljenost: " + str(float(globalSumm/globalImages)))
+	print ("Globalni maksimum: " + str(max(globalValueList)))
+	print ("Globalni minimum: " + str(min(globalValueList)))
 	
 
 	manjih = 0
@@ -95,12 +99,12 @@ def recognizeControl():
 		else:
 			vecih += 1
 	
-	print "Ukupan broj slika:", globalImages
-	print "Broj prosjeka manjih od prosjeka pozitivnih (38.2916230658):", manjih
-	print "Broj prosjeka vevih od prosjeka pozitivnih (38.2916230658):", vecih
+	print ("Ukupan broj slika: " + str(globalImages))
+	print ("Broj prosjeka manjih od prosjeka pozitivnih (38.2916230658): " + str(manjih))
+	print ("Broj prosjeka vevih od prosjeka pozitivnih (38.2916230658): " + str(vecih))
 
 	for a,b,c,d,e,f in sorted(setStat, key=itemgetter(0)):
-		print "\\textbf{" + a + "} & " + str(b) + " & " + str(c) + " & " + str(d) + " & " + str(e) + " & " + str(f) + "\\\ \hline"
+		print ("\\textbf{" + a + "} & " + str(b) + " & " + str(c) + " & " + str(d) + " & " + str(e) + " & " + str(f) + "\\\ \hline")
 
 	del globalValueList [:]
 	del globalMeanValueList [:]
@@ -113,6 +117,8 @@ def recognizePositive():
 	globalImages = 0
 	globalSumm = 0
 	for person in os.listdir("CroppedYale"):
+		f = open(person + "_pos", "w")
+		print("u s" , file=f)
 		j = 0
 		recognizer = cv2.face.createLBPHFaceRecognizer()
 		recognizer.load("CroppedYale/" + person + "/recognizer.yml")
@@ -130,14 +136,14 @@ def recognizePositive():
 					summ += distance
 					valueList.append(distance)
 					globalValueList.append(distance)					
-				    	print faceImageFile, distance
+					print(str(images * 60) + " " +  str(distance) , file=f)
 				j += 1
 			
 		recognizer = None
 		
-		print "Prosjeca udaljenost:", float(summ/images)
-		print "Maksimum: ", max(valueList)
-		print "Minimum: ", min(valueList)
+		print ("Prosjeca udaljenost: " + str(float(summ/images)))
+		print ("Maksimum: " + str(max(valueList)))
+		print ("Minimum: " + str(min(valueList)))
 
 		globalMeanValueList.append(float(summ/images))
 
@@ -150,16 +156,17 @@ def recognizePositive():
 			else:
 				vecih += 1
 
-		print "Broj uzoraka manjih od prosjeka pozitivnih (38.2916230658):", manjih
-		print "Broj uzoraka vecih od prosjeka pozitivnih (38.2916230658):", vecih
+		print ("Broj uzoraka manjih od prosjeka pozitivnih (38.2916230658): " +  str(manjih))
+		print ("Broj uzoraka vecih+ od prosjeka pozitivnih (38.2916230658): " + str(vecih))
 
 		setStat.append([person,float(summ/images),max(valueList),min(valueList),manjih,vecih])
 
 		del valueList[:]
 
-	print "Globalna prosjeca udaljenost:", float(globalSumm/globalImages)
-	print "Globalni maksimum: ", max(globalValueList)
-	print "Globalni minimum: ", min(globalValueList)
+	print ("Globalna prosjeca udaljenost: " + str(float(globalSumm/globalImages)))
+	print ("Globalni maksimum: " + str(max(globalValueList)))
+	print ("Globalni minimum: " + str(min(globalValueList)))
+	
 
 	manjih = 0
 	vecih = 0
@@ -170,12 +177,12 @@ def recognizePositive():
 		else:
 			vecih += 1
 	
-	print "Ukupan broj slika:", globalImages
-	print "Broj prosjeka manjih od prosjeka pozitivnih (38.2916230658):", manjih
-	print "Broj prosjeka vecih od prosjeka pozitivnih (38.2916230658):", vecih
+	print ("Ukupan broj slika: " + str(globalImages))
+	print ("Broj prosjeka manjih od prosjeka pozitivnih (38.2916230658): " + str(manjih))
+	print ("Broj prosjeka vevih od prosjeka pozitivnih (38.2916230658): " + str(vecih))
 
 	for a,b,c,d,e,f in sorted(setStat, key=itemgetter(0)):
-		print "\\textbf{" + a + "} & " + str(b) + " & " + str(c) + " & " + str(d) + " & " + str(e) + " & " + str(f) + "\\\ \hline"
+		print ("\\textbf{" + a + "} & " + str(b) + " & " + str(c) + " & " + str(d) + " & " + str(e) + " & " + str(f) + "\\\ \hline")
 
 	del globalValueList [:]
 	del globalMeanValueList [:]
@@ -190,6 +197,8 @@ def recognizeNegative():
 	for originalPerson in os.listdir("CroppedYale"):
 		recognizer = cv2.face.createLBPHFaceRecognizer()
 		recognizer.load("CroppedYale/" + originalPerson + "/recognizer.yml")
+		f = open(originalPerson + "_neg", "w")
+		print("u s" , file=f)
 		mean = 0
 		images = 0
 		summ = 0
@@ -205,12 +214,13 @@ def recognizeNegative():
 						summ += distance
 						valueList.append(distance)
 						globalValueList.append(distance)					
-					    	#print faceImageFile, distance
+						print(str(images) + " " +  str(distance) , file=f)
+			
 		recognizer = None
 		
-		print "Prosjeca udaljenost:", float(summ/images)
-		print "Maksimum: ", max(valueList)
-		print "Minimum: ", min(valueList)
+		print ("Prosjeca udaljenost: " + str(float(summ/images)))
+		print ("Maksimum: " + str(max(valueList)))
+		print ("Minimum: " + str(min(valueList)))
 
 		globalMeanValueList.append(float(summ/images))
 
@@ -223,16 +233,17 @@ def recognizeNegative():
 			else:
 				vecih += 1
 
-		print "Broj uzoraka manjih od prosjeka pozitivnih (37.6740299879):", manjih
-		print "Broj uzoraka vecih od prosjeka pozitivnih (37.6740299879):", vecih
+		print ("Broj uzoraka manjih od prosjeka pozitivnih (38.2916230658): " +  str(manjih))
+		print ("Broj uzoraka vecih+ od prosjeka pozitivnih (38.2916230658): " + str(vecih))
 
-		setStat.append([originalPerson,float(summ/images),max(valueList),min(valueList),manjih,vecih])
+		setStat.append([person,float(summ/images),max(valueList),min(valueList),manjih,vecih])
 
 		del valueList[:]
 
-	print "Globalna prosjeca udaljenost:", float(globalSumm/globalImages)
-	print "Globalni maksimum: ", max(globalValueList)
-	print "Globalni minimum: ", min(globalValueList)
+	print ("Globalna prosjeca udaljenost: " + str(float(globalSumm/globalImages)))
+	print ("Globalni maksimum: " + str(max(globalValueList)))
+	print ("Globalni minimum: " + str(min(globalValueList)))
+	
 
 	manjih = 0
 	vecih = 0
@@ -243,12 +254,12 @@ def recognizeNegative():
 		else:
 			vecih += 1
 	
-	print "Ukupan broj slika:", globalImages
-	print "Broj prosjeka manjih od prosjeka pozitivnih (37.6740299879):", manjih
-	print "Broj prosjeka vecih od prosjeka pozitivnih (37.6740299879):", vecih
+	print ("Ukupan broj slika: " + str(globalImages))
+	print ("Broj prosjeka manjih od prosjeka pozitivnih (38.2916230658): " + str(manjih))
+	print ("Broj prosjeka vevih od prosjeka pozitivnih (38.2916230658): " + str(vecih))
 
 	for a,b,c,d,e,f in sorted(setStat, key=itemgetter(0)):
-		print "\\textbf{" + a + "} & " + str(b) + " & " + str(c) + " & " + str(d) + " & " + str(e) + " & " + str(f) + "\\\ \hline"
+		print ("\\textbf{" + a + "} & " + str(b) + " & " + str(c) + " & " + str(d) + " & " + str(e) + " & " + str(f) + "\\\ \hline")
 
 	del globalValueList [:]
 	del globalMeanValueList [:]
@@ -259,7 +270,7 @@ def extractFaces():
 	i = 0
 	for faceImageFile in os.listdir("."):
 		if faceImageFile.endswith(".jpg"):
-			print faceImageFile
+			print (faceImageFile)
 			i += 1
 			faceImage = cv2.imread(faceImageFile, 0)
 			faces = faceCascade.detectMultiScale(faceImage)
@@ -267,7 +278,7 @@ def extractFaces():
 				cv2.imwrite(str(i)+".png", faceImage[y: y + h, x: x + w])
 
 #trainNew()
-recognizeControl()
-#recognizePositive()
+#recognizeControl()
+recognizePositive()
 #recognizeNegative()
 #recognize()

@@ -14,7 +14,7 @@ from sendfile import sendfile
 INTERFACEID = "28734682"
 
 #Informacije o serveru
-HOST = 'localhost'
+HOST = '192.168.1.9'
 PORT = 8888
 ADDR = (HOST,PORT)
 
