@@ -24,6 +24,7 @@ int iAngle, iDistance;
 int index1=0;
 int index2=0;
 PFont orcFont;
+int sonarMode = 0;
 
 void setup() {
   
@@ -49,6 +50,11 @@ void draw() {
   drawLine();
   drawObject();
   drawText();
+  
+  if(sonarMode < 15){
+    myPort.write(10);
+    sonarMode++;
+  }
 }
 
 void serialEvent (Serial myPort) { // starts reading data from the Serial Port
@@ -115,11 +121,12 @@ void drawText() { // draws the texts on the screen
   
   pushMatrix();
   if(iDistance>100) {
-  noObject = "Out of Range";
+    noObject = "Out of Range";
   }
   else {
-  noObject = "In Range";
+    noObject = "In Range";
   }
+  
   fill(0,0,0);
   noStroke();
   rect(0, height-height*0.0648, width, height);

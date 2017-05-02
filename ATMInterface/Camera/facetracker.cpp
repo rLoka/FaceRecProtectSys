@@ -75,7 +75,6 @@ public:
 
 private:
     CascadeDetectorAdapter();
-
     Ptr<CascadeClassifier> Detector;
 };
 

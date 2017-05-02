@@ -38,6 +38,8 @@ const int sonarEcho = 8;
 const int maxDistance = 120;
 const int scanningGroups = 5;
 
+boolean sonarMode = false;
+
 NewPing sonar(sonarTrigger, sonarEcho, maxDistance);
 byte input;
 
@@ -75,6 +77,40 @@ int calculateDistance(){
   duration = pulseIn(sonarEcho, HIGH); // Reads the echoPin, returns the sound wave travel time in microseconds
   distance = duration*0.034/2;
   return distance;
+}
+
+void sonarModeON(){
+  for(int i = minSonarAngle; i<=maxSonarAngle; i++){
+    int distance = sonar.ping_cm();// Calls a function for calculating the distance measured by the Ultrasonic sensor for each degree
+    //delay(5);
+    moveRight(servoLR.read());
+    delay(15);   
+ 
+    if(distance == 0){
+      distance = 150;
+    }
+    
+    Serial.print(i); // Sends the current degree into the Serial Port
+    Serial.print(","); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
+    Serial.print(distance); // Sends the distance value into the Serial Port
+    Serial.print("."); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
+  }
+  
+  for(int i = maxSonarAngle; i>=minSonarAngle; i--){  
+    int distance = sonar.ping_cm();// Calls a function for calculating the distance measured by the Ultrasonic sensor for each degree
+    //delay(5);
+    moveLeft(servoLR.read());   
+    delay(15);
+    
+    if(distance == 0){
+      distance = 150;
+    }
+    
+    Serial.print(i); // Sends the current degree into the Serial Port
+    Serial.print(","); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
+    Serial.print(distance); // Sends the distance value into the Serial Port
+    Serial.print("."); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
+  }
 }
 
 void moveToNearestObject() {
@@ -163,14 +199,13 @@ void setup()
    pinMode(led, OUTPUT);
    pinMode(reset, INPUT_PULLUP);
    pinMode(enable, INPUT_PULLUP);
-   pinMode(sonarTrigger, OUTPUT); // Sets the trigPin as an Output
-   pinMode(sonarEcho, INPUT); // Sets the echoPin as an Input
+   pinMode(sonarTrigger, OUTPUT);
+   pinMode(sonarEcho, INPUT);
    servoLR.attach(LRMotor);
    servoUD.attach(UDMotor);
    servoLR.write(LR);
    servoUD.write(UD);
    Serial.begin(9600);
-   //moveToNearestObject();
 }
 
 void loop()
@@ -185,7 +220,10 @@ void loop()
     //setup();
   }
   
-  if(Serial.available() > 0)
+  if(sonarMode == true){    
+    sonarModeON();
+  }else{
+    if(Serial.available() > 0)
     {
       digitalWrite(led, HIGH); 
       switch (Serial.read()) {
@@ -214,7 +252,13 @@ void loop()
         case 8:
           setup();
           break;
+        case 10:
+          servoLR.write(minSonarAngle);
+          delay(1000);
+          sonarMode = true;
+          break;          
       }      
       digitalWrite(led, LOW);      
     }
+  }    
 }
