@@ -21,9 +21,9 @@ const int minSonarAngle = 20;//-60//51
 const int midSonarAngle = 89;//0
 const int maxSonarAngle = 170; //60//130
 
-const int minFaceAngle = 30;//-60//51
+const int minFaceAngle = 45;//-60//51
 const int midFaceAngle = 60;//0
-const int maxFaceAngle = 80; //60//130
+const int maxFaceAngle = 75; //60//130
 
 const int LR = midSonarAngle;//48 - 90, 15 - 45, 95 - 135
 const int UD = midFaceAngle;//60
@@ -139,7 +139,16 @@ void moveToNearestObject() {
     //Serial.println(nearestCoordinate.distance);
     
     if(nearestCoordinate.angle >= 20 || nearestCoordinate.angle <= 170){
-      servoLR.write(nearestCoordinate.angle + 5);
+      /*if(nearestCoordinate.angle < midSonarAngle){
+        servoLR.write(nearestCoordinate.angle - 5);
+      }
+      else if(nearestCoordinate.angle > midSonarAngle){
+        servoLR.write(nearestCoordinate.angle + 5);
+      }
+      else{
+        servoLR.write(nearestCoordinate.angle);
+      }*/
+      servoLR.write(nearestCoordinate.angle);
     }
     else{
       servoLR.write(midSonarAngle);
@@ -198,9 +207,9 @@ void loop()
         case 6:
           servoUD.write(minFaceAngle);
           break;
-        case 7:
-          delay(100);
+        case 7:          
           moveUp(servoUD.read());
+          delay(60);
           break;
         case 8:
           setup();

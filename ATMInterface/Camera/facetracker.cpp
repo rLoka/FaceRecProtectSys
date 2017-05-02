@@ -55,7 +55,7 @@ const int camCenterHeightAreaMax = camHeight + camCenterArea;
 
 //Specijaliziranje xml kaskade za detektor
 //const string cascadeFrontalFaceFilename = "lbpcascade_frontalface_improved.xml";
-const string cascadeFrontalFaceFilename = "lbpcascade_frontalface.xml";
+const string cascadeFrontalFaceFilename = "haarcascade_frontalface_default.xml";
 const string cascadeEyesFaceFilename = "haarcascade_eye_tree_eyeglasses.xml";
 
 //Specijalizacija abstraktne klase DetectionBasedTracker::IDetector
@@ -158,7 +158,7 @@ int main(int, char **) {
             } else {
                 end = clock();
                 double elapsed = double(end - begin) / CLOCKS_PER_SEC;
-                if (elapsed > 1 && searchingForPerson == false && searchingForFace == false) {
+                if (elapsed > 2 && searchingForPerson == false && searchingForFace == false) {
                     command = (char) 5;
                     arduino.write(command);
                     searchingForPerson = true;
@@ -171,10 +171,14 @@ int main(int, char **) {
                     arduino.write(command);
                 }
                 else if(searchingForFace == true){
-                    if(faceSearchCount < 50){
+                    begin = clock();
+                    if(faceSearchCount < 120){
                         command = (char) 7;
-                        arduino.write(command);
+                        if(faceSearchCount % 2){
+                            arduino.write(command);
+                        }
                         faceSearchCount++;
+                        usleep(60000);
                     }
                     else{
                         command = (char) 8;
