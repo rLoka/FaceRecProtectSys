@@ -35,7 +35,7 @@ const int enable = 13;
 
 const int sonarTrigger = 7;
 const int sonarEcho = 8;
-const int maxDistance = 120;
+const int maxDistance = 150;
 const int scanningGroups = 5;
 
 boolean sonarMode = false;
@@ -70,18 +70,17 @@ int calculateDistance(){
   int distance;
   digitalWrite(sonarTrigger, LOW); 
   delayMicroseconds(2);
-  // Sets the trigPin on HIGH state for 10 micro seconds
   digitalWrite(sonarTrigger, HIGH); 
   delayMicroseconds(10);
   digitalWrite(sonarTrigger, LOW);
-  duration = pulseIn(sonarEcho, HIGH); // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(sonarEcho, HIGH);
   distance = duration*0.034/2;
   return distance;
 }
 
 void sonarModeON(){
   for(int i = minSonarAngle; i<=maxSonarAngle; i++){
-    int distance = sonar.ping_cm();// Calls a function for calculating the distance measured by the Ultrasonic sensor for each degree
+    int distance = sonar.ping_cm();
     //delay(5);
     moveRight(servoLR.read());
     delay(15);   
@@ -90,14 +89,14 @@ void sonarModeON(){
       distance = 150;
     }
     
-    Serial.print(i); // Sends the current degree into the Serial Port
-    Serial.print(","); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
-    Serial.print(distance); // Sends the distance value into the Serial Port
-    Serial.print("."); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
+    Serial.print(i);
+    Serial.print(",");
+    Serial.print(distance);
+    Serial.print(".");
   }
   
   for(int i = maxSonarAngle; i>=minSonarAngle; i--){  
-    int distance = sonar.ping_cm();// Calls a function for calculating the distance measured by the Ultrasonic sensor for each degree
+    int distance = sonar.ping_cm();
     //delay(5);
     moveLeft(servoLR.read());   
     delay(15);
@@ -106,10 +105,10 @@ void sonarModeON(){
       distance = 150;
     }
     
-    Serial.print(i); // Sends the current degree into the Serial Port
-    Serial.print(","); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
-    Serial.print(distance); // Sends the distance value into the Serial Port
-    Serial.print("."); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
+    Serial.print(i);
+    Serial.print(",");
+    Serial.print(distance);
+    Serial.print(".");
   }
 }
 
@@ -147,34 +146,45 @@ void moveToNearestObject() {
     int angleSum = 0;
     int distanceSum = 0;
     
-    for(int i = 1; i <= angleStepSize; i++){
-      angleSum += coordinates[i].angle;
-      distanceSum += coordinates[i].distance;
+    for(int i = 0; i <= angleStepSize; i++){
+      Serial.print(coordinates[i].angle);
+      Serial.print(",");
+      Serial.print(coordinates[i].distance);
+      Serial.println(".");
+      //angleSum += coordinates[i].angle;
+      if(coordinates[i].distance <= 2){
+          distanceSum += 100;
+      }
+      else{
+          distanceSum += coordinates[i].distance;
+      }
+      
       if(i%scanningGroups == 0){
-        averageCoordinates[i/scanningGroups].angle = angleSum/scanningGroups;
+        averageCoordinates[i/scanningGroups].angle = coordinates[i-(scanningGroups/2)].angle;
         averageCoordinates[i/scanningGroups].distance = distanceSum/scanningGroups;
-        angleSum = 0;
+        //angleSum = 0;
         distanceSum = 0;
       }
     }
     
-    nearestCoordinate.angle = averageCoordinates[0].angle;
-    nearestCoordinate.distance = averageCoordinates[0].distance;    
+    nearestCoordinate.angle = 80;
+    nearestCoordinate.distance = 200;    
 
     for(int i = 1; i < angleStepSize/scanningGroups; i++){
-      //Serial.println(averageCoordinates[i].angle);   
-      //Serial.println(averageCoordinates[i].distance); 
-      //Serial.println("-------------------"); 
-      if(nearestCoordinate.distance > averageCoordinates[i].distance){
+      Serial.println(averageCoordinates[i].angle);   
+      Serial.println(averageCoordinates[i].distance); 
+      Serial.println("-------------------");
+      if(nearestCoordinate.distance > averageCoordinates[i].distance && averageCoordinates[i].distance > 0 && averageCoordinates[i].angle > 0){
           nearestCoordinate.angle = averageCoordinates[i].angle;
           nearestCoordinate.distance = averageCoordinates[i].distance;
       }
+      
     }
  
     //Serial.println(nearestCoordinate.angle);   
     //Serial.println(nearestCoordinate.distance);
     
-    if(nearestCoordinate.angle >= 20 || nearestCoordinate.angle <= 170){
+    if(nearestCoordinate.angle >= 20 && nearestCoordinate.angle <= 170){
       /*if(nearestCoordinate.angle < midSonarAngle){
         servoLR.write(nearestCoordinate.angle - 5);
       }
@@ -184,11 +194,14 @@ void moveToNearestObject() {
       else{
         servoLR.write(nearestCoordinate.angle);
       }*/
-      servoLR.write(nearestCoordinate.angle);
+      servoLR.write(nearestCoordinate.angle+2);
     }
     else{
       servoLR.write(midSonarAngle);
     }
+    
+    Serial.println(nearestCoordinate.angle);   
+    Serial.println(nearestCoordinate.distance);
     
     Serial.println("1");    
     

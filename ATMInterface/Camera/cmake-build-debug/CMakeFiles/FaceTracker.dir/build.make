@@ -97,7 +97,6 @@ FaceTracker_EXTERNAL_OBJECTS =
 ../FaceTracker: /usr/local/lib/libopencv_bgsegm.so.3.2.0
 ../FaceTracker: /usr/local/lib/libopencv_bioinspired.so.3.2.0
 ../FaceTracker: /usr/local/lib/libopencv_ccalib.so.3.2.0
-../FaceTracker: /usr/local/lib/libopencv_cvv.so.3.2.0
 ../FaceTracker: /usr/local/lib/libopencv_dpm.so.3.2.0
 ../FaceTracker: /usr/local/lib/libopencv_freetype.so.3.2.0
 ../FaceTracker: /usr/local/lib/libopencv_fuzzy.so.3.2.0

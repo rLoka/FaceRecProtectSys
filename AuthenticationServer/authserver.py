@@ -81,7 +81,7 @@ class FaceRecognitionTrainer:
     def train(self):
         print "Treniranje podataka  ..."
         '''
-        os.rename(self.newImageFile, "Users/" + str(self.panNumber) + "/Samples/" + str(int(time.time())) + '.jpg')
+        os.rename(self.newImageFile, "Users/" + str(self.panNumber) + "/Samples/" + str(int(time.time())) + '.png')
         for faceImageFile in os.listdir("Users/" + str(self.panNumber) + "/Samples/"):
             faceImage = cv2.imread("Users/" + str(self.panNumber) + "/Samples/" + faceImageFile, 0)
             self.imageList.append(faceImage)
@@ -152,7 +152,7 @@ def connectionThread(connection, addr):
             elif key == "ok":
                 transaction.interface.connection.send("tkn:ok")
                 leastDistance = min(transaction.faceDict.itervalues())
-                if leastDistance <= 50 and leastDistance != None:
+                if leastDistance <= 1000 and leastDistance != None:
                     leastDistanceKeys = transaction.faceDict.keys()[transaction.faceDict.values().index(leastDistance)]
                     faceRecognitionTrainer = FaceRecognitionTrainer(transaction.panNumber, leastDistanceKeys)
                     faceRecognitionTrainer.train()
@@ -193,7 +193,14 @@ def connectionThread(connection, addr):
 
             #Ako je prepoznavanje uspjesno onda uzmi najpovoljniju fotografiju i pridodaj ostalim uzorcima
             leastDistance = min(transaction.faceDict.itervalues())
-            if leastDistance <= 25 and leastDistance != None:
+            bestImageFIle = transaction.faceDict.keys()[transaction.faceDict.values().index(leastDistance)]
+            bestImage = cv2.imread("Auth/" + str(transaction.panNumber) + "/" + bestImageFIle, 0)
+            cv2.namedWindow(bestImageFIle, cv2.WINDOW_NORMAL)
+            cv2.resizeWindow(bestImageFIle, 600, 600)
+            cv2.putText(bestImage, "Pouzdanost: " + str(format(max(0, 100-leastDistance*2), '.2f')) + "%", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
+            cv2.imshow(bestImageFIle, bestImage)
+            cv2.waitKey()
+            if leastDistance <= 30 and leastDistance != None:
                 print "Uzorak prihvacen, udaljenost =", leastDistance
                 connection.send(unicode("ath:pin;ok:fce;ok:tkn;none"))
                 leastDistanceKeys = transaction.faceDict.keys()[transaction.faceDict.values().index(leastDistance)]
@@ -210,7 +217,7 @@ def connectionThread(connection, addr):
             connection.send(unicode("ok:ok"))
             print "Primam uzorke lica ..."
             transaction = next((x for x in transactionList if x.interface.ipAddress == addr[0] and x.interface.port == addr[1]), None)
-            imageFile = open("Auth/" + str(transaction.panNumber) + "/" + str(message) + '.jpg', 'w')
+            imageFile = open("Auth/" + str(transaction.panNumber) + "/" + str(message) + '.png', 'w')
             while True:
                 imageBytes = connection.recv(4096)
 

@@ -8,13 +8,24 @@ import time
 import socket
 import subprocess
 import threading
+from imutils import face_utils
+import numpy as np
+import argparse
+import imutils
+import dlib
+import cv2
+from sympy import Point, Line, mpmath
+from mpmath import *
+from operator import itemgetter
+import base64
 from sendfile import sendfile
 
 #Informacije o uredaju
 INTERFACEID = "28734682"
 
 #Informacije o serveru
-HOST = '192.168.1.9'
+#HOST = '127.0.0.1'
+HOST = '127.0.0.1'
 PORT = 8888
 ADDR = (HOST,PORT)
 
@@ -23,6 +34,19 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #Klasa za rad sa GUI-jem -> GTK
 class GUI:
+    def calculateFaceTilt(self, leftEye, rightEye):
+        zeroLine = Line(Point(1, 0), Point(0, 0))
+        eyeMiddlePoint = Point((leftEye + rightEye) / 2)
+        eyeLine = Line(leftEye, rightEye)
+        angle = mpmath.degrees(eyeLine.angle_between(zeroLine))
+        if (leftEye.y > rightEye.y):
+            return int(angle) - 180
+        else:
+            return 180 - int(angle)
+
+    def rotateImage(self, imageObj, correctionAngle, nosePoint):
+        rotationMatrix = cv2.getRotationMatrix2D(nosePoint, correctionAngle, 1.0)
+        return cv2.warpAffine(imageObj, rotationMatrix, (imageObj.shape[1], imageObj.shape[0]), flags=cv2.INTER_LINEAR)
 
     def waitForResponse(self):
         while True:
@@ -35,10 +59,52 @@ class GUI:
                 return components
 
     def sendFaceImages(self):
-        for i in range(0, 5):
+        self.statusLabel.set_text("Obrada uzoraka")
+        detector = dlib.get_frontal_face_detector()
+        predictor = dlib.shape_predictor("ldm.dat")
+
+        for i in range(0, 7):
+            image = cv2.imread("Camera/Resources/" + str(i) + '.png')
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+            rects = detector(gray, 1)
+
+            # loop over the face detections
+            for (j, rect) in enumerate(rects):
+                shape = predictor(gray, rect)
+                shape = face_utils.shape_to_np(shape)
+
+                angle = self.calculateFaceTilt(Point(shape[39]), Point(shape[42]))
+
+                image = self.rotateImage(image, angle, tuple(shape[33]))
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                rects = detector(gray, 1)
+
+                # loop over the face detections
+                for (k, rect) in enumerate(rects):
+
+                    shape = predictor(gray, rect)
+                    shape = face_utils.shape_to_np(shape)
+                    eye = Point(shape[37])
+                    eyebrow = Point(shape[19])
+                    left = Point(min(shape, key=itemgetter(0)))
+                    top = Point(min(shape, key=itemgetter(1)))
+                    right = Point(max(shape, key=itemgetter(0)))
+                    bottom = Point(max(shape, key=itemgetter(1)))
+
+                    image = image[int(top.y - eye.distance(eyebrow) / 2):int(top.y + top.distance(bottom)),
+                            int(left.x):int(left.x + left.distance(right))]
+                    ratio = 168.0 / image.shape[1]
+                    dimensions = (168, int(image.shape[0] * ratio))
+
+                    image = cv2.resize(image, dimensions, interpolation=cv2.INTER_AREA)
+                    cv2.imwrite("Camera/Resources/" + str(i) + '.png', image)
+
+        for i in range(0, 7):
+            self.statusLabel.set_text("Slanje uzoraka")
             client.send("ftp:" + str(i))
             self.waitForResponse()
-            imageFile = open("Camera/Resources/" + str(i) + '.jpg', "rb")
+            imageFile = open("Camera/Resources/" + str(i) + '.png', "rb")
             offset = 0
             while True:
                 sent = sendfile(client.fileno(), imageFile.fileno(), offset, 4096)
@@ -47,18 +113,13 @@ class GUI:
                     break  # EOF
                 offset += sent
             self.waitForResponse()
-            self.statusLabel.set_text("Uzorci se provjeravaju")
 
     def waitForTokenApproval(self):
         response = self.waitForResponse()[1]
-        self.infoWindow.hide()
-        self.infoWindow2.show()
         if response == "ok":
-            self.infoTitle2.set_text("Transakcija odobrena")
-            self.infoText2.set_text("Transakcija je uspjesno obavljena!")
+            self.statusLabel.set_text("Token odobren")
         else:
-            self.infoTitle2.set_text("Transakcija odbijena")
-            self.infoText2.set_text("Transakcija nije uspjesno obavljena!")
+            self.statusLabel.set_text("Token odbijen")
 
     def sendPIN(self):
         client.send("pin:" + str(self.inputPin.get_text()))
@@ -66,13 +127,9 @@ class GUI:
         if key == "ath":
             if pinmessage == "pin;ok":
                 if authmessage == "fce;ok":
-                    self.infoWindow.show()
-                    self.infoTitle.set_text("Transakcija obavljena")
-                    self.infoText.set_text("Transakcija je uspjesno obavljena!")
+                    self.statusLabel.set_text("Uspjesno!")
                 elif authmessage == "fce;fls":
-                    self.infoWindow.show()
-                    self.infoTitle.set_text("Transakcija neuspjesna")
-                    self.infoText.set_text("Token za odobrenje: " + token.split(";")[1])
+                    self.statusLabel.set_text("Token: " + token.split(";")[1])
                     #GLib.idle_add(self.waitForTokenApproval, 0)
                     #time.sleep(0.2)
                     #start_new_thread(self.waitForTokenApproval, (0,))
@@ -80,9 +137,7 @@ class GUI:
                     thread.daemon = True
                     thread.start()
             else:
-                self.infoWindow.show()
-                self.infoTitle.set_text("Transakcija neuspjesna")
-                self.infoText.set_text("PIN nije valjan")
+                self.statusLabel.set_text("Neuspjesno!")
 
     def sendAccountNumber(self):
         client.send("acc:" + str(self.getActiveComboItem()))
@@ -100,13 +155,12 @@ class GUI:
 
     #Uzimanje uzoraka lica i pozivanje metode za slanje
     def getFaceImages(self):
-        self.statusLabel.set_text("Stanite u vidljiv polozaj!")
+        self.statusLabel.set_text("Uzimanje uzoraka")
         cameraProc = subprocess.Popen(["./FaceTracker"], stdout=subprocess.PIPE, cwd="Camera", shell=True, bufsize=1)
         with cameraProc.stdout:
             for line in iter(cameraProc.stdout.readline, b''):
                 print line,
         cameraProc.wait()
-        self.statusLabel.set_text("Uzorci lica uzeti")
 
     def getActiveComboItem(self):
         index = self.cbxAccountNum.get_active()
@@ -174,7 +228,7 @@ class GUI:
     def on_btnReset_clicked(self, object):
         self.inputPin.set_text("")
         self.cbxAccountNum.set_active(0)
-        client.close()
+        #client.close()
 
     #Umetnuta kartica
     def on_cbxAccountNum_changed(self, object):

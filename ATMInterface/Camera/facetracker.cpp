@@ -128,10 +128,15 @@ int main(int, char **) {
     bool faceDetected = true;
     bool searchingForPerson = false;
     bool searchingForFace = false;
+    bool haveWaited = false;
     int faceSearchCount = 0;
 
     clock_t begin;
     clock_t end;
+
+    clock_t found;
+    double timeElapsed;
+    clock_t endFound;
 
     if (!arduino.isOpen())
     {
@@ -157,7 +162,7 @@ int main(int, char **) {
             } else {
                 end = clock();
                 double elapsed = double(end - begin) / CLOCKS_PER_SEC;
-                if (elapsed > 2 && searchingForPerson == false && searchingForFace == false) {
+                if (elapsed > 1.2 && searchingForPerson == false && searchingForFace == false) {
                     command = (char) 5;
                     arduino.write(command);
                     searchingForPerson = true;
@@ -243,21 +248,32 @@ int main(int, char **) {
                     faceYalligned = true;
                 }
 
-                if (faceXalligned && faceYalligned && shallCloseWhenDone) {
-                    if (faceShotsCount < 5) {
-                        Faces[biggestFaceIndex].width += 30;
-                        Faces[biggestFaceIndex].height += 30;
-                        Faces[biggestFaceIndex].x -= 30;
-                        Faces[biggestFaceIndex].y -= 30;
+                if (faceXalligned && faceYalligned && !shallCloseWhenDone) {
+                    if(!haveWaited){
+                        found = clock();
+                        endFound = clock();
+                        haveWaited = true;
+                    }
+                    else{
+                        endFound = clock();
+                        timeElapsed = double(endFound - found) / CLOCKS_PER_SEC;
+                        if(faceShotsCount < 7) {
+                            if(timeElapsed > 1) {
+                                /*Faces[biggestFaceIndex].width += 30;
+                                Faces[biggestFaceIndex].height += 30;
+                                Faces[biggestFaceIndex].x -= 30;
+                                Faces[biggestFaceIndex].y -= 30;*/
 
-                        cv::Mat croppedFaceImage;
-                        croppedFaceImage = GrayFrame(Faces[biggestFaceIndex]).clone();
-                        imwrite("Resources/" + to_string(faceShotsCount) + ".jpg", croppedFaceImage);
-                        faceShotsCount++;
-                        cout << "Uzorak lica uzet." << endl;
-                    } else {
-                        Detector.stop();
-                        return 0;
+                                //cv::Mat croppedFaceImage;
+                                //croppedFaceImage = GrayFrame(Faces[biggestFaceIndex]).clone();
+                                imwrite("Resources/" + to_string(faceShotsCount) + ".png", GrayFrame);
+                                faceShotsCount++;
+                                //cout << "Uzorak lica uzet." << endl;
+                            }
+                        } else {
+                            Detector.stop();
+                            return 0;
+                        }
                     }
                 }
             }
