@@ -40,14 +40,14 @@ const bool shallCloseWhenDone = false;
 
 //Definiranje izvora videa
 //0 - ugrađena kamera, 1, 2, 3 ... ostale video kamere, "home/karlo/.../video.avi" putanja videa
-const int videoSource = 1;
+const int videoSource = 0;
 
 //Definiranje veličine rezolucije kamere / 2
-const int camWidth = 320;
-const int camHeight = 180;
+const int camWidth = 501;
+const int camHeight = 282;
 
 //Konstante vezane za određivanje područja centra
-const int camCenterArea = 70;
+const int camCenterArea = camHeight/4;
 const int camCenterWidthAreaMin = camWidth - camCenterArea;
 const int camCenterHeightAreaMin = camHeight - camCenterArea;
 const int camCenterWidthAreaMax = camWidth + camCenterArea;
@@ -140,7 +140,7 @@ int main(int, char **) {
 
     if (!arduino.isOpen())
     {
-        cerr << "Ne mogu naci pomicni senzor!" << endl;
+        cout << "usbNotFound" << endl;
         return 1;
     }
 
@@ -162,7 +162,7 @@ int main(int, char **) {
             } else {
                 end = clock();
                 double elapsed = double(end - begin) / CLOCKS_PER_SEC;
-                if (elapsed > 1.2 && searchingForPerson == false && searchingForFace == false) {
+                if (elapsed > 2 && searchingForPerson == false && searchingForFace == false) {
                     command = (char) 5;
                     arduino.write(command);
                     searchingForPerson = true;
@@ -187,6 +187,7 @@ int main(int, char **) {
                     else{
                         command = (char) 8;
                         arduino.write(command);
+                        cout << "faceNotFound" << endl;
                         return 1;
                     }
                 }
@@ -258,7 +259,7 @@ int main(int, char **) {
                         endFound = clock();
                         timeElapsed = double(endFound - found) / CLOCKS_PER_SEC;
                         if(faceShotsCount < 7) {
-                            if(timeElapsed > 1) {
+                            if(timeElapsed > 1.5) {
                                 /*Faces[biggestFaceIndex].width += 30;
                                 Faces[biggestFaceIndex].height += 30;
                                 Faces[biggestFaceIndex].x -= 30;
@@ -272,6 +273,7 @@ int main(int, char **) {
                             }
                         } else {
                             Detector.stop();
+                            cout << "faceFound" << endl;
                             return 0;
                         }
                     }

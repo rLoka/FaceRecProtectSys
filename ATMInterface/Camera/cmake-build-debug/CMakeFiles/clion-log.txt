@@ -1,4 +1,5 @@
 /home/skywalker/Desktop/Dev/clion-2017.1/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/home/skywalker/Desktop/Faks/Rektorova/Rad/Source Code/FaceRecProtectSys/ATMInterface/Camera"
+-- Enabling AVX instructions
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/skywalker/Desktop/Faks/Rektorova/Rad/Source Code/FaceRecProtectSys/ATMInterface/Camera/cmake-build-debug

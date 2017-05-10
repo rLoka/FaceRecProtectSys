@@ -147,12 +147,7 @@ void moveToNearestObject() {
     int distanceSum = 0;
     
     for(int i = 0; i <= angleStepSize; i++){
-      Serial.print(coordinates[i].angle);
-      Serial.print(",");
-      Serial.print(coordinates[i].distance);
-      Serial.println(".");
-      //angleSum += coordinates[i].angle;
-      if(coordinates[i].distance <= 2){
+      if(coordinates[i].distance < 2){
           distanceSum += 100;
       }
       else{
@@ -171,9 +166,9 @@ void moveToNearestObject() {
     nearestCoordinate.distance = 200;    
 
     for(int i = 1; i < angleStepSize/scanningGroups; i++){
-      Serial.println(averageCoordinates[i].angle);   
-      Serial.println(averageCoordinates[i].distance); 
-      Serial.println("-------------------");
+      //Serial.println(averageCoordinates[i].angle);   
+      //Serial.println(averageCoordinates[i].distance); 
+      //Serial.println("-------------------");
       if(nearestCoordinate.distance > averageCoordinates[i].distance && averageCoordinates[i].distance > 0 && averageCoordinates[i].angle > 0){
           nearestCoordinate.angle = averageCoordinates[i].angle;
           nearestCoordinate.distance = averageCoordinates[i].distance;
@@ -200,8 +195,8 @@ void moveToNearestObject() {
       servoLR.write(midSonarAngle);
     }
     
-    Serial.println(nearestCoordinate.angle);   
-    Serial.println(nearestCoordinate.distance);
+    //Serial.println(nearestCoordinate.angle);   
+    //Serial.println(nearestCoordinate.distance);
     
     Serial.println("1");    
     

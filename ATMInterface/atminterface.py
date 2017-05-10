@@ -64,8 +64,8 @@ class GUI:
         predictor = dlib.shape_predictor("ldm.dat")
 
         for i in range(0, 7):
-            image = cv2.imread("Camera/Resources/" + str(i) + '.png')
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            gray = cv2.imread("Camera/Resources/" + str(i) + '.png', cv2.CV_8UC1)
+            #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
             rects = detector(gray, 1)
 
@@ -76,8 +76,8 @@ class GUI:
 
                 angle = self.calculateFaceTilt(Point(shape[39]), Point(shape[42]))
 
-                image = self.rotateImage(image, angle, tuple(shape[33]))
-                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                gray = self.rotateImage(gray, angle, tuple(shape[33]))
+                #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 rects = detector(gray, 1)
 
                 # loop over the face detections
@@ -92,13 +92,19 @@ class GUI:
                     right = Point(max(shape, key=itemgetter(0)))
                     bottom = Point(max(shape, key=itemgetter(1)))
 
-                    image = image[int(top.y - eye.distance(eyebrow) / 2):int(top.y + top.distance(bottom)),
+                    gray = gray[int(top.y - eye.distance(eyebrow) / 2):int(top.y + top.distance(bottom)),
                             int(left.x):int(left.x + left.distance(right))]
-                    ratio = 168.0 / image.shape[1]
-                    dimensions = (168, int(image.shape[0] * ratio))
 
-                    image = cv2.resize(image, dimensions, interpolation=cv2.INTER_AREA)
-                    cv2.imwrite("Camera/Resources/" + str(i) + '.png', image)
+                    #ujednacavanje histograma
+                    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+                    gray = clahe.apply(gray)
+                    #gray = cv2.bilateralFilter(gray, 9, 75, 75)
+
+                    ratio = 300.0 / gray.shape[1]
+                    dimensions = (300, int(gray.shape[0] * ratio))
+
+                    gray = cv2.resize(gray, dimensions, interpolation=cv2.INTER_AREA)
+                    cv2.imwrite("Camera/Resources/" + str(i) + '.png', gray)
 
         for i in range(0, 7):
             self.statusLabel.set_text("Slanje uzoraka")
@@ -112,6 +118,8 @@ class GUI:
                     client.send("EOF")
                     break  # EOF
                 offset += sent
+            self.statusLabel.set_text("Potvrdite PIN")
+            self.btnConfirm.set_sensitive(True)
             self.waitForResponse()
 
     def waitForTokenApproval(self):
@@ -130,9 +138,6 @@ class GUI:
                     self.statusLabel.set_text("Uspjesno!")
                 elif authmessage == "fce;fls":
                     self.statusLabel.set_text("Token: " + token.split(";")[1])
-                    #GLib.idle_add(self.waitForTokenApproval, 0)
-                    #time.sleep(0.2)
-                    #start_new_thread(self.waitForTokenApproval, (0,))
                     thread = threading.Thread(target=self.waitForTokenApproval)
                     thread.daemon = True
                     thread.start()
@@ -150,16 +155,21 @@ class GUI:
     def sendInformation(self, zero):
         self.sendInterfaceId()
         self.sendAccountNumber()
-        self.getFaceImages()
         self.sendFaceImages()
 
     #Uzimanje uzoraka lica i pozivanje metode za slanje
-    def getFaceImages(self):
+    def getFaceImages(self, zero):
         self.statusLabel.set_text("Uzimanje uzoraka")
         cameraProc = subprocess.Popen(["./FaceTracker"], stdout=subprocess.PIPE, cwd="Camera", shell=True, bufsize=1)
         with cameraProc.stdout:
             for line in iter(cameraProc.stdout.readline, b''):
-                print line,
+                print line
+                if line == 'faceFound\n':
+                    self.sendInformation(0)
+                elif line == 'faceNotFound\n':
+                    self.statusLabel.set_text("Lice nije\ndetektirano!")
+                elif line == 'usbNotFound\n':
+                    self.statusLabel.set_text("Problem s\nkamerom")
         cameraProc.wait()
 
     def getActiveComboItem(self):
@@ -227,13 +237,16 @@ class GUI:
 
     def on_btnReset_clicked(self, object):
         self.inputPin.set_text("")
+        self.statusLabel.set_text("Umetnite\nkarticu")
+        self.btnConfirm.set_sensitive(False)
         self.cbxAccountNum.set_active(0)
         #client.close()
 
     #Umetnuta kartica
     def on_cbxAccountNum_changed(self, object):
+        print "Racun odabran."
         if self.isAccountSelected():
-            start_new_thread(self.sendInformation,(0,))
+            start_new_thread(self.getFaceImages,(0,))
 
     def on_btnConfirm_clicked(self, object):
         if self.inputPin.get_text_length() == 4:
@@ -290,6 +303,8 @@ class GUI:
         self.cbxAccountNum.add_attribute(self.cell, 'text', 0)
 
         self.cbxAccountNum.set_active(0)
+
+        self.btnConfirm.set_sensitive(False)
 
         #Prikazivanje glavnog prozora
         self.mainWindow.show()

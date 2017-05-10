@@ -6,6 +6,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
 find_package(OpenCV REQUIRED)
 
+add_definitions(-mavx)
+message(STATUS "Enabling AVX instructions")
+
 set(SOURCE_FILES facetracker.cpp)
 add_executable(FaceTracker ${SOURCE_FILES})
 

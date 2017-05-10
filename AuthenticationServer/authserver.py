@@ -4,11 +4,16 @@
 
 import socket
 from thread import *
+import multiprocessing
 import cv2, os
 import time
 import numpy as np
 import hashlib
+from shutil import copyfile
+import psutil
 from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 
 HOST = ""
 PORT = 8888
@@ -16,7 +21,7 @@ PORT = 8888
 userList = []
 interfaceList = []
 transactionList = []
-
+activeProcess = None
 
 class Transaction(object):
     user = None
@@ -80,16 +85,19 @@ class FaceRecognitionTrainer:
 
     def train(self):
         print "Treniranje podataka  ..."
-        '''
-        os.rename(self.newImageFile, "Users/" + str(self.panNumber) + "/Samples/" + str(int(time.time())) + '.png')
-        for faceImageFile in os.listdir("Users/" + str(self.panNumber) + "/Samples/"):
-            faceImage = cv2.imread("Users/" + str(self.panNumber) + "/Samples/" + faceImageFile, 0)
+        os.remove("Users/" + str(self.panNumber) + "/" + str(self.panNumber) + ".yml")
+        os.system('cp ' + self.newImageFile + " Users/" + str(self.panNumber) + "/processed/" + str(int(time.time())) + '.png')
+        #copyfile(self.newImageFile, "Users/" + str(self.panNumber) + "/processed/" + str(int(time.time())) + '.png')
+        #os.rename(self.newImageFile, "Users/" + str(self.panNumber) + "/processed/" + str(int(time.time())) + '.png')
+        for faceImageFile in os.listdir("Users/" + str(self.panNumber) + "/processed/"):
+            faceImage = cv2.imread("Users/" + str(self.panNumber) + "/processed/" + faceImageFile, 0)
             self.imageList.append(faceImage)
             self.labelList.append(hash(self.panNumber))
+            print "Unos uzorka: " + faceImageFile
         self.recognizer.train(self.imageList, np.array(self.labelList))
-        '''
-        faceImage = cv2.imread(self.newImageFile, 0)
-        self.recognizer.update([faceImage], np.array([hash(self.panNumber)]))
+
+        #faceImage = cv2.imread(self.newImageFile, 0)
+        #self.recognizer.update([faceImage], np.array([hash(self.panNumber)]))
         self.recognizer.save("Users/" + str(self.panNumber) + "/" + str(self.panNumber) + ".yml")
         print "Treniranje podataka dovrseno ..."
 
@@ -116,10 +124,33 @@ def cleanData(transaction):
             userList.remove(transaction.user)
         transactionList.remove(transaction)
 
+#Metoda za prikaz uzorka
+def showSample(transactionNumber, bestImageFIle, leastDistance):
+    #bestImage = cv2.imread("Auth/" + str(transactionNumber) + "/" + bestImageFIle, cv2.IMREAD_COLOR)
+    image = Image.open("Auth/" + str(transactionNumber) + "/" + bestImageFIle, "r").convert('RGBA')
+
+    #size = width, height = pattern.size
+
+    wpercent = (700 / float(image.size[0]))
+    hsize = int((float(image.size[1]) * float(wpercent)))
+    image = image.resize((700, hsize), Image.ANTIALIAS)
+    draw = ImageDraw.Draw(image, 'RGBA')
+    # font = ImageFont.truetype("Font.ttf", 3)
+
+    draw.text((30, 10), "Slicnost: " + str(format(max(0, 100 - leastDistance * 2), '.1f')) + "%", (0, 0, 0, 0))  # ,font=font)
+    image.show()
+    '''
+    cv2.namedWindow(bestImageFIle, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(bestImageFIle, 700, 700)
+    cv2.putText(bestImage, "Slicnost: " + str(format(max(0, 100 - leastDistance * 2), '.1f')) + "%", (10, 50),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    cv2.imshow(bestImageFIle, bestImage)
+    cv2.waitKey()
+    '''
 
 # Metoda za prihvacanje klijenta
 def connectionThread(connection, addr):
-
+    global activeProcess
     while True:
         data = connection.recv(1024)
 
@@ -194,13 +225,20 @@ def connectionThread(connection, addr):
             #Ako je prepoznavanje uspjesno onda uzmi najpovoljniju fotografiju i pridodaj ostalim uzorcima
             leastDistance = min(transaction.faceDict.itervalues())
             bestImageFIle = transaction.faceDict.keys()[transaction.faceDict.values().index(leastDistance)]
-            bestImage = cv2.imread("Auth/" + str(transaction.panNumber) + "/" + bestImageFIle, 0)
-            cv2.namedWindow(bestImageFIle, cv2.WINDOW_NORMAL)
-            cv2.resizeWindow(bestImageFIle, 600, 600)
-            cv2.putText(bestImage, "Pouzdanost: " + str(format(max(0, 100-leastDistance*2), '.2f')) + "%", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
-            cv2.imshow(bestImageFIle, bestImage)
-            cv2.waitKey()
-            if leastDistance <= 30 and leastDistance != None:
+
+            for proc in psutil.process_iter():
+                if proc.name() == "display":
+                    proc.kill()
+
+            image = Image.open("Auth/" + str(transaction.panNumber) + "/" + bestImageFIle, "r").convert('RGBA')
+            wpercent = (700 / float(image.size[0]))
+            hsize = int((float(image.size[1]) * float(wpercent)))
+            image = image.resize((700, hsize), Image.ANTIALIAS)
+            draw = ImageDraw.Draw(image, 'RGBA')
+            draw.text((30, 30), "Podudarnost: " + str(format(max(0, 100 - leastDistance * 2), '.2f')) + "%", (255, 0, 0, 0), ImageFont.truetype("font.ttf", 56))
+            image.show()
+
+            if leastDistance <= 38 and leastDistance != None:
                 print "Uzorak prihvacen, udaljenost =", leastDistance
                 connection.send(unicode("ath:pin;ok:fce;ok:tkn;none"))
                 leastDistanceKeys = transaction.faceDict.keys()[transaction.faceDict.values().index(leastDistance)]
@@ -212,6 +250,7 @@ def connectionThread(connection, addr):
                 print "Poslan zahtijev za token .."
                 transaction.mobileToken = hashlib.sha1((transaction.panNumber + transaction.interface.ipAddress + str(int(time.time()))).encode("UTF-8")).hexdigest()[:8]
                 connection.send(unicode("ath:pin;ok:fce;fls:tkn;" + transaction.mobileToken))
+
 
         elif key == "ftp":
             connection.send(unicode("ok:ok"))
