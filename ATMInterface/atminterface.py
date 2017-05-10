@@ -25,7 +25,7 @@ INTERFACEID = "28734682"
 
 #Informacije o serveru
 #HOST = '127.0.0.1'
-HOST = '127.0.0.1'
+HOST = '192.168.1.10'
 PORT = 8888
 ADDR = (HOST,PORT)
 

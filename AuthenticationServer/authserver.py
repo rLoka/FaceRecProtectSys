@@ -102,18 +102,14 @@ class FaceRecognitionTrainer:
         print "Treniranje podataka dovrseno ..."
 
 class FaceRecognizer:
-    cascadePath = "haarcascade_frontalface_default.xml"
     recognizer = cv2.face.createLBPHFaceRecognizer()
 
     def __init__(self, panNumber):
         self.recognizer.load("Users/" + str(panNumber) + "/" + str(panNumber) + ".yml")
 
     def recognize(self, faceImage):
-        faceCascade = cv2.CascadeClassifier(self.cascadePath)
-        faces = faceCascade.detectMultiScale(faceImage)
-        if len(faces) == 1:
-            id, distance = self.recognizer.predict(faceImage)
-            return distance
+        id, distance = self.recognizer.predict(faceImage)
+        return distance
 
 
 # Metoda za uklanjanje podataka nakon transakcije
