@@ -19,7 +19,7 @@ def trainNew():
 		j = 0
 		recognizer = cv2.face.createLBPHFaceRecognizer()
 		for faceImageFile in os.listdir("CroppedYale/" + person + "/"):
-			if faceImageFile.endswith(".pgm"):
+			if faceImageFile.endswith(".pgm") or faceImageFile.endswith(".png"):
 				if j % 2 == 0:	
 					print ("File: " + faceImageFile)		
 					faceImage = cv2.imread("CroppedYale/" + person + "/" + faceImageFile, 0)
@@ -47,7 +47,7 @@ def recognizeControl():
 		images = 0
 		summ = 0
 		for faceImageFile in os.listdir("CroppedYale/" + person):
-			if faceImageFile.endswith(".pgm"):
+			if faceImageFile.endswith(".pgm") or faceImageFile.endswith(".png"):
 				if j % 2 == 0:
 					faceImage = cv2.imread("CroppedYale/" + person + "/" + faceImageFile, 0)
 				    	idd, distance = recognizer.predict(faceImage)
@@ -126,7 +126,7 @@ def recognizePositive():
 		images = 0
 		summ = 0
 		for faceImageFile in os.listdir("CroppedYale/" + person):
-			if faceImageFile.endswith(".pgm"):
+			if faceImageFile.endswith(".pgm") or faceImageFile.endswith(".png"):
 				if j % 2 != 0:
 					faceImage = cv2.imread("CroppedYale/" + person + "/" + faceImageFile, 0)
 				    	idd, distance = recognizer.predict(faceImage)
@@ -205,7 +205,7 @@ def recognizeNegative():
 		for person in os.listdir("CroppedYale"):
 			if person != originalPerson:
 				for faceImageFile in os.listdir("CroppedYale/" + person):
-					if faceImageFile.endswith(".pgm"):
+					if faceImageFile.endswith(".pgm") or faceImageFile.endswith(".png"):
 						faceImage = cv2.imread("CroppedYale/" + person + "/" + faceImageFile, 0)
 					    	idd, distance = recognizer.predict(faceImage)
 						images += 1
@@ -277,8 +277,8 @@ def extractFaces():
 			for (x, y, w, h) in faces:
 				cv2.imwrite(str(i)+".png", faceImage[y: y + h, x: x + w])
 
-#trainNew()
-#recognizeControl()
+trainNew()
+recognizeControl()
 recognizePositive()
-#recognizeNegative()
+recognizeNegative()
 #recognize()

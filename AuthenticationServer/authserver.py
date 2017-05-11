@@ -22,6 +22,7 @@ userList = []
 interfaceList = []
 transactionList = []
 activeProcess = None
+similarity = 28
 
 class Transaction(object):
     user = None
@@ -231,10 +232,10 @@ def connectionThread(connection, addr):
             hsize = int((float(image.size[1]) * float(wpercent)))
             image = image.resize((700, hsize), Image.ANTIALIAS)
             draw = ImageDraw.Draw(image, 'RGBA')
-            draw.text((30, 30), "Podudarnost: " + str(format(max(0, 100 - leastDistance * 2), '.2f')) + "%", (255, 0, 0, 0), ImageFont.truetype("font.ttf", 56))
+            draw.text((30, 30), "Podudarnost: " + str(format(max(0, 100 - leastDistance * (100/similarity)), '.2f')) + "%", (255, 0, 0, 0), ImageFont.truetype("font.ttf", 56))
             image.show()
 
-            if leastDistance <= 38 and leastDistance != None:
+            if leastDistance <= similarity and leastDistance != None:
                 print "Uzorak prihvacen, udaljenost =", leastDistance
                 connection.send(unicode("ath:pin;ok:fce;ok:tkn;none"))
                 leastDistanceKeys = transaction.faceDict.keys()[transaction.faceDict.values().index(leastDistance)]
